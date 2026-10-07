@@ -21,4 +21,9 @@ setup(
     maintainer_email='hiepga05102005@gmail.com',
     description='Lab 04: TurtleBot 4 simulation, SLAM, localization and Nav2',
     license='MIT',
+    entry_points={
+        'console_scripts': [
+            'auto_survey = tb4_lab04.auto_survey:main',
+        ],
+    },
 )

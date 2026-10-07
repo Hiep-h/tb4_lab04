@@ -13,13 +13,16 @@ tb4_lab04/
 │   ├── sim.launch.py            # Phần 1: TurtleBot 4 trong Gazebo
 │   ├── mapping.launch.py        # Phần 2: SLAM Toolbox + RViz2
 │   ├── localization.launch.py   # Phần 3: nạp map.yaml + localization + RViz2
-│   └── navigation.launch.py     # Phần 4: Nav2
+│   ├── navigation.launch.py     # Phần 4: Nav2
+│   └── survey.launch.py         # (tuỳ chọn) robot tự lái khảo sát để vẽ map
 ├── maps/                        # map.yaml + map.pgm (sinh ở Phần 2)
 ├── config/                      # cấu hình tuỳ chỉnh (nếu có)
 ├── scripts/
 │   ├── check_topics.sh          # kiểm tra /scan, /odom, /cmd_vel
 │   └── save_map.sh              # lưu bản đồ vào maps/
-├── tb4_lab04/                   # python package (rỗng)
+├── tb4_lab04/
+│   ├── auto_survey.py           # node tự lái khảo sát (thay teleop) bằng LiDAR
+│   └── wall_follow.py           # thuật toán bám tường bên phải (không phụ thuộc ROS)
 ├── package.xml, setup.py, setup.cfg
 └── README.md
 ```
@@ -88,6 +91,14 @@ ros2 launch tb4_lab04 mapping.launch.py
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 Lái chậm, đi dọc các bức tường, quay vòng ở ngã rẽ, đi qua mọi hành lang. Theo dõi bản đồ trên RViz2; nếu thấy tường bị nhân đôi/lệch thì dừng, lái lại qua vùng đó (loop closure) hoặc làm lại từ đầu.
+
+**Cách khác – robot tự lái (không cần gõ phím):** thay Terminal 3 bằng node `auto_survey`, robot tự bám tường bên phải bằng LiDAR, đi hết một vòng rồi tự dừng khi quay lại gần điểm xuất phát (hoặc hết thời gian):
+```bash
+colcon build --packages-select tb4_lab04 --symlink-install && source install/setup.bash   # build lại 1 lần để có node mới
+ros2 launch tb4_lab04 survey.launch.py                    # mặc định speed:=0.18 target_dist:=0.55 min_path:=15.0
+ros2 launch tb4_lab04 survey.launch.py speed:=0.15 min_path:=25.0   # ví dụ chỉnh tham số
+```
+Log mỗi 5 giây cho biết trạng thái và quãng đường đã đi. Ctrl+C dừng robot ngay. Node chỉ đọc `/scan`, `/odom` và publish `/cmd_vel`. Lưu ý: đề bài yêu cầu khảo sát bằng teleoperation, nên nếu nộp bằng chế độ tự lái thì hãy nêu rõ trong báo cáo/video; khi map lệch có thể quay lại dùng teleop.
 
 **Lưu bản đồ khi đã đủ (Terminal 4):**
 ```bash
