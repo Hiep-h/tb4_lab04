@@ -98,7 +98,7 @@ Lái chậm, đi dọc các bức tường, quay vòng ở ngã rẽ, đi qua m�
 ```bash
 ros2 launch tb4_lab04 drive_mapping.launch.py world:=maze
 ```
-Lệnh này mở Gazebo, sau ~25 giây mở SLAM Toolbox + RViz2 (bản đồ hiện ra và lớn dần khi robot đi), sau ~32 giây mở bảng điều khiển. Bạn kéo thanh **Tiến/Lùi** và **Xoay tròn** để lái. Phần **[ BẢN ĐỒ ]** trong bảng: nút *LƯU BẢN ĐỒ NGAY*, tự lưu mỗi 120 giây, và tự lưu khi đóng bảng (cả ba ghi vào `maps/map.yaml` + `maps/map.pgm`). Khi lái xong chỉ cần **đóng cửa sổ bảng điều khiển** để bản đồ được lưu lần cuối, rồi Ctrl+C terminal. Tham số: `map_dir:=<thư mục>`, `autosave_period:=<giây>`, `max_linear`, `max_angular`.
+Lệnh này mở Gazebo, sau ~25 giây mở SLAM Toolbox + RViz2 (bản đồ hiện ra và lớn dần khi robot đi), sau ~32 giây mở bảng điều khiển. Bạn kéo thanh **Tiến/Lùi** và **Xoay tròn** để lái. Phần **[ BẢN ĐỒ ]** trong bảng: nút *LƯU BẢN ĐỒ NGAY*, tự lưu mỗi 120 giây, và tự lưu khi đóng bảng (cả ba ghi vào `maps/map.yaml` + `maps/map.pgm`). Kéo thanh Tiến/Lùi sang **phải** để tiến, sang trái để lùi. Create 3 giới hạn việc lùi (log báo "Reached backup limit"), nên launch tự đặt `safety_override:=full` cho `/motion_control` (chỉ dùng trong mô phỏng). Khi lái xong chỉ cần **đóng cửa sổ bảng điều khiển** để bản đồ được lưu lần cuối, rồi Ctrl+C terminal. Tham số: `map_dir:=<thư mục>`, `autosave_period:=<giây>`, `max_linear`, `max_angular`.
 
 **Cách điều khiển bằng bảng thanh trượt (không cần gõ phím trên terminal):**
 ```bash

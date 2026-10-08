@@ -6,7 +6,7 @@ Ban do hien tren RViz2 khi lai; bang dieu khien co nut luu ban do, tu luu dinh k
 import os
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, TimerAction
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -20,6 +20,8 @@ def generate_launch_description():
         DeclareLaunchArgument('map_dir', default_value=os.path.expanduser('~/tb4_ws/src/tb4_lab04/maps'),
                               description='thu muc luu map.yaml + map.pgm'),
         DeclareLaunchArgument('autosave_period', default_value='120.0', description='giay giua cac lan tu luu'),
+        DeclareLaunchArgument('safety_override', default_value='full',
+                              description='Create 3 motion_control: none | backup_only | full (full = cho lui/khong gioi han, chi dung o mo phong)'),
         DeclareLaunchArgument('max_linear', default_value='0.3'),
         DeclareLaunchArgument('max_angular', default_value='1.0'),
     ]
@@ -27,6 +29,10 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(PathJoinSubstitution([pkg, 'launch', 'sim.launch.py'])),
         launch_arguments={'world': LaunchConfiguration('world'), 'rviz': 'false'}.items(),
     )
+    # Create 3 mac dinh gioi han viec lui ("Reached backup limit"); trong mo phong cho phep lui tu do.
+    safety = TimerAction(period=22.0, actions=[ExecuteProcess(
+        cmd=['ros2', 'param', 'set', '/motion_control', 'safety_override', LaunchConfiguration('safety_override')],
+        output='screen')])
     # SLAM + RViz2 sau khi Gazebo len (~25 s), bang dieu khien sau them vai giay
     mapping = TimerAction(period=25.0, actions=[IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution([pkg, 'launch', 'mapping.launch.py'])))])
@@ -38,4 +44,4 @@ def generate_launch_description():
             'max_linear': LaunchConfiguration('max_linear'),
             'max_angular': LaunchConfiguration('max_angular'),
         }])])
-    return LaunchDescription(args + [sim, mapping, panel])
+    return LaunchDescription(args + [sim, safety, mapping, panel])

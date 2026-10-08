@@ -77,8 +77,8 @@ class Panel:
         tk.Label(root, text='[ KHUNG GẦM TURTLEBOT 4 ]', font=('DejaVu Sans', 11, 'bold'), fg='#1f3fd0').pack(pady=(0, 6))
         self.lin_var = tk.DoubleVar(value=0.0)
         self.ang_var = tk.DoubleVar(value=0.0)
-        self.lin_scale = self._slider('Tiến / Lùi  (m/s)', self.lin_var, -max_linear, max_linear, 0.01)
-        self.ang_scale = self._slider('Xoay tròn  (rad/s, + = quay trái)', self.ang_var, -max_angular, max_angular, 0.01)
+        self.lin_scale = self._slider('Tiến / Lùi  (m/s)      ◄ lùi  |  tiến ►  (kéo sang PHẢI để tiến)', self.lin_var, -max_linear, max_linear, 0.01)
+        self.ang_scale = self._slider('Xoay tròn  (rad/s)      ◄ quay phải  |  quay trái ►', self.ang_var, -max_angular, max_angular, 0.01)
 
         tk.Label(root, text='[ CHẾ ĐỘ & AN TOÀN ]', font=('DejaVu Sans', 11, 'bold'), fg='#228b22').pack(pady=(10, 2))
         self.auto_var = tk.BooleanVar(value=False)
