@@ -24,6 +24,7 @@ setup(
     entry_points={
         'console_scripts': [
             'auto_survey = tb4_lab04.auto_survey:main',
+            'control_panel = tb4_lab04.control_panel:main',
         ],
     },
 )

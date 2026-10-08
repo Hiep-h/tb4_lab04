@@ -21,6 +21,7 @@ tb4_lab04/
 │   ├── check_topics.sh          # kiểm tra /scan, /odom, /cmd_vel
 │   └── save_map.sh              # lưu bản đồ vào maps/
 ├── tb4_lab04/
+│   ├── control_panel.py         # bảng điều khiển thanh trượt (Tkinter) thay teleop bàn phím
 │   ├── auto_survey.py           # node tự lái khảo sát (thay teleop) bằng LiDAR
 │   └── wall_follow.py           # thuật toán bám tường bên phải (không phụ thuộc ROS)
 ├── package.xml, setup.py, setup.cfg
@@ -33,7 +34,7 @@ Yêu cầu: Ubuntu 22.04 (hoặc WSL2 + Ubuntu 22.04), ROS 2 Humble Desktop.
 
 ```bash
 sudo apt update
-sudo apt install -y ros-humble-turtlebot4-simulator ros-humble-turtlebot4-desktop \
+sudo apt install -y python3-tk ros-humble-turtlebot4-simulator ros-humble-turtlebot4-desktop \
   ros-humble-turtlebot4-navigation ros-humble-slam-toolbox ros-humble-nav2-bringup \
   ros-humble-nav2-map-server ros-humble-teleop-twist-keyboard
 ```
@@ -91,6 +92,13 @@ ros2 launch tb4_lab04 mapping.launch.py
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 Lái chậm, đi dọc các bức tường, quay vòng ở ngã rẽ, đi qua mọi hành lang. Theo dõi bản đồ trên RViz2; nếu thấy tường bị nhân đôi/lệch thì dừng, lái lại qua vùng đó (loop closure) hoặc làm lại từ đầu.
+
+**Cách điều khiển bằng bảng thanh trượt (không cần gõ phím trên terminal):**
+```bash
+ros2 run tb4_lab04 control_panel
+ros2 run tb4_lab04 control_panel --ros-args -p max_linear:=0.3 -p max_angular:=1.0   # chỉnh tốc độ tối đa
+```
+Bảng có thanh **Tiến / Lùi** (m/s) và **Xoay tròn** (rad/s), nút đỏ **PHANH KHẨN CẤP** (phím SPACE), phím ↑↓←→ chỉnh nhanh, tuỳ chọn *Chống va chạm* (chặn tiến khi vật cản phía trước gần hơn 0,30 m, đọc `/scan`) và *Tự về 0 khi thả thanh trượt*. Tick *Tự lái (bám tường)* để robot tự đi khảo sát. Đây vẫn là điều khiển bằng tay (teleoperation) nên phù hợp yêu cầu của đề. TurtleBot 4 là robot hai bánh vi sai nên không có thanh trượt ngang như xe Mecanum.
 
 **Cách khác – robot tự lái (không cần gõ phím):** thay Terminal 3 bằng node `auto_survey`, robot tự bám tường bên phải bằng LiDAR, đi hết một vòng rồi tự dừng khi quay lại gần điểm xuất phát (hoặc hết thời gian):
 ```bash
