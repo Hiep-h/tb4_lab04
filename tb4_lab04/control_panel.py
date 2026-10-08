@@ -61,6 +61,7 @@ class Panel:
         root.protocol('WM_DELETE_WINDOW', self.close)
 
         self.cmd = (0.0, 0.0)
+        self.wall_ticks = 0
         self.root.after(100, self._tick)
 
     def _slider(self, title, var, lo, hi, step):
@@ -107,7 +108,8 @@ class Panel:
                 lin, ang, state = 0.0, 0.0, 'cho_scan'
             else:
                 lin, ang, state = compute_cmd(scan['ranges'], scan['angle_min'], scan['angle_inc'], self.params,
-                                              scan['range_max'])
+                                              scan['range_max'], self.wall_ticks > 0)
+                self.wall_ticks = 60 if state == 'bam_tuong' else max(0, self.wall_ticks - 1)
             self.lin_var.set(round(lin, 3))
             self.ang_var.set(round(ang, 3))
         else:

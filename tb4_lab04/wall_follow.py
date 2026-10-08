@@ -29,8 +29,13 @@ def sector_min(ranges, angle_min, angle_inc, lo_deg, hi_deg, rmax):
     return best
 
 
-def compute_cmd(ranges, angle_min, angle_inc, p: Params, rmax: float = 8.0):
-    """Tra ve (linear, angular, trang_thai)."""
+def compute_cmd(ranges, angle_min, angle_inc, p: Params, rmax: float = 8.0, wall_recent: bool = True):
+    """Tra ve (linear, angular, trang_thai).
+
+    wall_recent: True neu vua moi bam tuong (mat tuong o goc ngoai -> cua phai de di vong goc);
+    False neu chua tung thay tuong / mat tuong da lau (khu vuc trong) -> di thang de tim tuong,
+    khong cua vong tai cho.
+    """
     front = sector_min(ranges, angle_min, angle_inc, -25, 25, rmax)
     right = sector_min(ranges, angle_min, angle_inc, -100, -70, rmax)
     front_right = sector_min(ranges, angle_min, angle_inc, -65, -25, rmax)
@@ -40,10 +45,17 @@ def compute_cmd(ranges, angle_min, angle_inc, p: Params, rmax: float = 8.0):
     if front < p.front_slow:
         return 0.4 * p.speed, 0.7 * p.max_ang, 'ne_vat_can'
 
-    # khoang cach vuong goc uoc luong tu huong cheo phia truoc ben phai (45 do)
+    if right > p.wall_lost:
+        # Khong co tuong ben hong phai.
+        if front_right < 0.9:
+            # tuong dang tien lai gan o phia truoc-ben phai: quay trai tranh ra, dung quay vao tuong
+            return 0.5 * p.speed, 0.5 * p.max_ang, 'ne_vat_can'
+        if wall_recent:
+            return 0.8 * p.speed, -0.6 * p.max_ang, 'cua_goc'   # vua mat tuong: di vong goc ngoai
+        return p.speed, 0.0, 'tim_tuong'                      # khu vuc trong: di thang de tim tuong
+
+    # co tuong ben phai: giu khoang cach; uoc luong khoang cach vuong goc ca tu huong cheo (45 do)
     d = min(right, front_right * math.cos(math.radians(45)))
-    if d > p.wall_lost:
-        return 0.8 * p.speed, -0.6 * p.max_ang, 'tim_tuong'
     ang = -p.kp * (d - p.target_dist)
     ang = max(-p.max_ang, min(p.max_ang, ang))
     lin = p.speed * (1.0 - 0.5 * abs(ang) / p.max_ang)

@@ -106,7 +106,7 @@ colcon build --packages-select tb4_lab04 --symlink-install && source install/set
 ros2 launch tb4_lab04 survey.launch.py                    # mặc định speed:=0.18 target_dist:=0.55 min_path:=15.0
 ros2 launch tb4_lab04 survey.launch.py speed:=0.15 min_path:=25.0   # ví dụ chỉnh tham số
 ```
-Log mỗi 5 giây cho biết trạng thái và quãng đường đã đi. Ctrl+C dừng robot ngay. Node chỉ đọc `/scan`, `/odom` và publish `/cmd_vel`. Lưu ý: đề bài yêu cầu khảo sát bằng teleoperation, nên nếu nộp bằng chế độ tự lái thì hãy nêu rõ trong báo cáo/video; khi map lệch có thể quay lại dùng teleop.
+Robot xuất phát ở vùng trống thì đi thẳng để tìm tường, khi chạm tường thì quay trái cho tường nằm bên phải rồi bám theo. Node đặt mốc tại nơi bắt đầu bám tường ổn định (>5 s) và tự dừng khi đã đi đủ `min_path` mét, từng đi xa mốc ít nhất `min_excursion` (mặc định 2,5 m) và quay lại gần mốc (vòng bám tường khép kín), hoặc hết `max_duration`. Có thể chỉnh các tham số này bằng `--ros-args -p min_excursion:=3.0`. Log mỗi 5 giây cho biết trạng thái, quãng đường đã đi và khoảng cách xa xuất phát tối đa. Ctrl+C dừng robot ngay. Node chỉ đọc `/scan`, `/odom` và publish `/cmd_vel`. Lưu ý: đề bài yêu cầu khảo sát bằng teleoperation, nên nếu nộp bằng chế độ tự lái thì hãy nêu rõ trong báo cáo/video; khi map lệch có thể quay lại dùng teleop.
 
 **Lưu bản đồ khi đã đủ (Terminal 4):**
 ```bash
