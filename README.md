@@ -14,7 +14,8 @@ tb4_lab04/
 │   ├── mapping.launch.py        # Phần 2: SLAM Toolbox + RViz2
 │   ├── localization.launch.py   # Phần 3: nạp map.yaml + localization + RViz2
 │   ├── navigation.launch.py     # Phần 4: Nav2
-│   └── survey.launch.py         # (tuỳ chọn) robot tự lái khảo sát để vẽ map
+│   ├── survey.launch.py         # (tuỳ chọn) robot tự lái khảo sát để vẽ map
+│   └── drive_mapping.launch.py  # MỘT LỆNH: Gazebo + SLAM + RViz2 + bảng điều khiển (lái tay, tự lưu map)
 ├── maps/                        # map.yaml + map.pgm (sinh ở Phần 2)
 ├── config/                      # cấu hình tuỳ chỉnh (nếu có)
 ├── scripts/
@@ -92,6 +93,12 @@ ros2 launch tb4_lab04 mapping.launch.py
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 Lái chậm, đi dọc các bức tường, quay vòng ở ngã rẽ, đi qua mọi hành lang. Theo dõi bản đồ trên RViz2; nếu thấy tường bị nhân đôi/lệch thì dừng, lái lại qua vùng đó (loop closure) hoặc làm lại từ đầu.
+
+**Cách nhanh nhất – một lệnh mở tất cả, bạn tự lái bằng bảng thanh trượt:**
+```bash
+ros2 launch tb4_lab04 drive_mapping.launch.py world:=maze
+```
+Lệnh này mở Gazebo, sau ~25 giây mở SLAM Toolbox + RViz2 (bản đồ hiện ra và lớn dần khi robot đi), sau ~32 giây mở bảng điều khiển. Bạn kéo thanh **Tiến/Lùi** và **Xoay tròn** để lái. Phần **[ BẢN ĐỒ ]** trong bảng: nút *LƯU BẢN ĐỒ NGAY*, tự lưu mỗi 120 giây, và tự lưu khi đóng bảng (cả ba ghi vào `maps/map.yaml` + `maps/map.pgm`). Khi lái xong chỉ cần **đóng cửa sổ bảng điều khiển** để bản đồ được lưu lần cuối, rồi Ctrl+C terminal. Tham số: `map_dir:=<thư mục>`, `autosave_period:=<giây>`, `max_linear`, `max_angular`.
 
 **Cách điều khiển bằng bảng thanh trượt (không cần gõ phím trên terminal):**
 ```bash

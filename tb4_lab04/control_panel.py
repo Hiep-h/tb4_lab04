@@ -11,6 +11,10 @@ Chay:  ros2 run tb4_lab04 control_panel
 - "Tu lai (bam tuong)": robot tu bam tuong ben phai bang LiDAR de khao sat ve ban do.
 """
 import math
+import os
+import subprocess
+import threading
+import time
 import tkinter as tk
 
 from tb4_lab04.wall_follow import Params, compute_cmd
@@ -19,9 +23,51 @@ FONT = ('DejaVu Sans', 10)
 FONT_B = ('DejaVu Sans', 10, 'bold')
 
 
+class MapSaver:
+    """Luu ban do bang nav2_map_server map_saver_cli (chay nen, khong lam dung giao dien)."""
+
+    def __init__(self, map_dir):
+        self.map_dir = os.path.expanduser(map_dir)
+        self.busy = False
+        self.last = 'chưa lưu'
+
+    def save_async(self, done=None):
+        if self.busy:
+            return
+        self.busy = True
+
+        def work():
+            try:
+                os.makedirs(self.map_dir, exist_ok=True)
+                prefix = os.path.join(self.map_dir, 'map')
+                res = subprocess.run(
+                    ['ros2', 'run', 'nav2_map_server', 'map_saver_cli', '-f', prefix, '--ros-args', '-p',
+                     'use_sim_time:=true'], capture_output=True, text=True, timeout=40)
+                ok = res.returncode == 0 and os.path.exists(prefix + '.yaml') and os.path.exists(prefix + '.pgm')
+                self.last = ('Đã lưu %s lúc %s' % (prefix + '.yaml', time.strftime('%H:%M:%S'))) if ok else \
+                    'LỖI lưu map: ' + (res.stderr or res.stdout)[-120:].replace('\n', ' ')
+            except Exception as exc:  # noqa: BLE001
+                self.last = 'LỖI lưu map: %s' % exc
+            finally:
+                self.busy = False
+                if done:
+                    done(self.last)
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def save_blocking(self):
+        """Dung khi dong bang: cho den khi luu xong (toi da ~40 s)."""
+        ev = threading.Event()
+        self.save_async(lambda _msg: ev.set())
+        ev.wait(45)
+
+
 class Panel:
-    def __init__(self, root, bridge, max_linear=0.3, max_angular=1.0, stop_dist=0.30):
+    def __init__(self, root, bridge, max_linear=0.3, max_angular=1.0, stop_dist=0.30, saver=None, autosave_period=120.0):
         self.root, self.bridge = root, bridge
+        self.saver = saver
+        self.autosave_period = autosave_period
+        self._last_autosave = time.time()
         self.max_linear, self.max_angular, self.stop_dist = max_linear, max_angular, stop_dist
         self.params = Params(speed=min(0.18, max_linear), max_ang=min(0.8, max_angular))
         root.title('Điều Khiển TurtleBot 4')
@@ -44,6 +90,20 @@ class Panel:
                        variable=self.safe_var, font=FONT).pack(anchor='w')
         tk.Checkbutton(root, text='Tự về 0 khi thả thanh trượt', variable=self.spring_var, font=FONT).pack(anchor='w')
 
+        if self.saver is not None:
+            tk.Label(root, text='[ BẢN ĐỒ ]', font=('DejaVu Sans', 11, 'bold'), fg='#b8860b').pack(pady=(8, 2))
+            self.autosave_var = tk.BooleanVar(value=True)
+            self.saveclose_var = tk.BooleanVar(value=True)
+            tk.Checkbutton(root, text='Tự lưu bản đồ mỗi %d giây' % int(autosave_period), variable=self.autosave_var,
+                           font=FONT).pack(anchor='w')
+            tk.Checkbutton(root, text='Tự lưu bản đồ khi đóng bảng này', variable=self.saveclose_var,
+                           font=FONT).pack(anchor='w')
+            tk.Button(root, text='LƯU BẢN ĐỒ NGAY', command=self.save_now, bg='#2e7d32', fg='white',
+                      activebackground='#1b5e20', activeforeground='white', font=('DejaVu Sans', 10, 'bold'),
+                      relief='flat', pady=4).pack(fill='x', pady=(4, 0))
+            self.save_label = tk.Label(root, text='Bản đồ: chưa lưu', font=('DejaVu Sans', 9), anchor='w',
+                                       justify='left', wraplength=380)
+            self.save_label.pack(fill='x')
         self.status = tk.Label(root, text='', font=('DejaVu Sans Mono', 9), justify='left', anchor='w')
         self.status.pack(fill='x', pady=(8, 4))
 
@@ -119,14 +179,31 @@ class Panel:
             state += ' / CHAN_VAT_CAN'
         self.cmd = (lin, ang)
         self.bridge.publish(lin, ang)
+        self._autosave_tick()
         fr = 'n/a' if front is None else '%.2f m' % front
         self.status.configure(text='Lệnh gửi : v=%+.2f m/s  w=%+.2f rad/s\nVật cản trước : %s\nChế độ : %s' % (
             lin, ang, fr, state))
         self.root.after(100, self._tick)
 
+    def save_now(self):
+        if self.saver is None:
+            return
+        self.save_label.configure(text='Bản đồ: đang lưu...')
+        self.saver.save_async(lambda msg: self.root.after(0, lambda: self.save_label.configure(text='Bản đồ: ' + msg)))
+
+    def _autosave_tick(self):
+        if self.saver is not None and self.autosave_var.get() and not self.saver.busy \
+                and time.time() - self._last_autosave >= self.autosave_period:
+            self._last_autosave = time.time()
+            self.save_now()
+
     def close(self):
         for _ in range(3):
             self.bridge.publish(0.0, 0.0)
+        if self.saver is not None and self.saveclose_var.get():
+            self.save_label.configure(text='Bản đồ: đang lưu trước khi đóng...')
+            self.root.update_idletasks()
+            self.saver.save_blocking()
         self.root.destroy()
 
 
@@ -177,10 +254,13 @@ def main():
     node.declare_parameter('max_linear', 0.3)
     node.declare_parameter('max_angular', 1.0)
     node.declare_parameter('stop_dist', 0.30)
+    node.declare_parameter('map_dir', '~/tb4_ws/src/tb4_lab04/maps')
+    node.declare_parameter('autosave_period', 120.0)
     g = node.get_parameter
     bridge = RosBridge(node, Twist, LaserScan, qos_profile_sensor_data, g('cmd_topic').value, g('scan_topic').value)
     root = tk.Tk()
-    Panel(root, bridge, g('max_linear').value, g('max_angular').value, g('stop_dist').value)
+    Panel(root, bridge, g('max_linear').value, g('max_angular').value, g('stop_dist').value,
+          saver=MapSaver(g('map_dir').value), autosave_period=g('autosave_period').value)
     try:
         root.mainloop()
     finally:
