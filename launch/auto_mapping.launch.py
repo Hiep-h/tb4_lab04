@@ -18,13 +18,15 @@ def generate_launch_description():
     args = [
         DeclareLaunchArgument('world', default_value='maze', description='warehouse | depot | maze'),
         DeclareLaunchArgument('map_dir', default_value=os.path.expanduser('~/tb4_ws/src/tb4_lab04/maps')),
+        DeclareLaunchArgument('software_render', default_value='true', description='dung hinh bang phan mem (sua LiDAR toan 0.0 tren card Intel)'),
         DeclareLaunchArgument('safety_override', default_value='full'),
         DeclareLaunchArgument('vmax', default_value='0.3', description='toc do tien toi da (m/s)'),
         DeclareLaunchArgument('max_duration', default_value='1800.0', description='giay (gio mo phong)'),
     ]
     sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution([pkg, 'launch', 'sim.launch.py'])),
-        launch_arguments={'world': LaunchConfiguration('world'), 'rviz': 'false'}.items(),
+        launch_arguments={'world': LaunchConfiguration('world'), 'rviz': 'false',
+                          'software_render': LaunchConfiguration('software_render')}.items(),
     )
     safety = TimerAction(period=22.0, actions=[ExecuteProcess(
         cmd=['ros2', 'param', 'set', '/motion_control', 'safety_override', LaunchConfiguration('safety_override')],

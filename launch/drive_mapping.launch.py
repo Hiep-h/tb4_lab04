@@ -20,6 +20,7 @@ def generate_launch_description():
         DeclareLaunchArgument('map_dir', default_value=os.path.expanduser('~/tb4_ws/src/tb4_lab04/maps'),
                               description='thu muc luu map.yaml + map.pgm'),
         DeclareLaunchArgument('autosave_period', default_value='120.0', description='giay giua cac lan tu luu'),
+        DeclareLaunchArgument('software_render', default_value='true', description='dung hinh bang phan mem (sua LiDAR toan 0.0 tren card Intel)'),
         DeclareLaunchArgument('safety_override', default_value='full',
                               description='Create 3 motion_control: none | backup_only | full (full = cho lui/khong gioi han, chi dung o mo phong)'),
         DeclareLaunchArgument('max_linear', default_value='0.3'),
@@ -27,7 +28,8 @@ def generate_launch_description():
     ]
     sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution([pkg, 'launch', 'sim.launch.py'])),
-        launch_arguments={'world': LaunchConfiguration('world'), 'rviz': 'false'}.items(),
+        launch_arguments={'world': LaunchConfiguration('world'), 'rviz': 'false',
+                          'software_render': LaunchConfiguration('software_render')}.items(),
     )
     # Create 3 mac dinh gioi han viec lui ("Reached backup limit"); trong mo phong cho phep lui tu do.
     safety = TimerAction(period=22.0, actions=[ExecuteProcess(

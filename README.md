@@ -158,6 +158,7 @@ Trên RViz2 chọn **Nav2 Goal**, bấm và kéo tại một vị trí trống t
 
 | Hiện tượng | Cách xử lý |
 |---|---|
+| `/scan` toàn 0.0, bản đồ SLAM rỗng, "Vật cản trước" luôn 12,00 m | LiDAR của Gazebo (GPU) dựng sai trên một số card Intel. Các launch của repo đã bật `LIBGL_ALWAYS_SOFTWARE=1` mặc định (`software_render:=false` để tắt). Chạy tay thì `export LIBGL_ALWAYS_SOFTWARE=1` trước `ros2 launch`; mô phỏng sẽ chậm hơn |
 | Không thấy `/scan` hoặc `/odom` | Bấm Play trong Gazebo; kiểm tra `ros2 topic list`; chờ ~30 s sau khi mở |
 | Map không cập nhật / TF lỗi | Chạy đúng `use_sim_time:=true` (các launch của repo đã truyền sẵn); mỗi lần chỉ chạy một bản mô phỏng |
 | Chạy lại bị trùng tiến trình | `pkill -9 -f "ign|gz|ruby|rviz2"` rồi chạy lại |
