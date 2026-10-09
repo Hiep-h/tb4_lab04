@@ -121,6 +121,12 @@
       <pose>-0.5562 4.1112 0.0000 0.0000 -0.0000 0.0000</pose>
     </include>
     <include>
+      <name>Door_01_001</name>
+      <static>true</static>
+      <uri>model://aws_robomaker_residential_Door_01</uri>
+      <pose>6.0014 -5.5490 0.0000 0.0000 -0.0000 0.0000</pose>
+    </include>
+    <include>
       <name>FitnessEquipment_01_001</name>
       <static>true</static>
       <uri>model://aws_robomaker_residential_FitnessEquipment_01</uri>
