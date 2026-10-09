@@ -81,6 +81,12 @@ dựng bằng phần mềm rất nặng. Hạ xuống LiDAR 10 Hz × 360 tia, ca
 ~/tb4_ws/src/tb4_lab04/scripts/lighten_sensors.sh          # hoàn tác: lighten_sensors.sh restore
 ```
 
+**Phần 3 + 4 một lệnh (định vị + Nav2, dùng map đã lưu):**
+```bash
+ros2 launch tb4_lab04 nav_demo.launch.py world:=small_house x:=1.0 y:=1.0
+```
+Robot xuất phát đúng chỗ lúc vẽ map; launch tự đặt vị trí ban đầu (0, 0, 0). Trong RViz2 dùng **Nav2 Goal** đặt ≥ 3 điểm đích.
+
 Bấm nút ▶ (Play) ở góc dưới trái cửa sổ Gazebo nếu mô phỏng đang tạm dừng.
 
 **Terminal 2 – kiểm tra topic:**
