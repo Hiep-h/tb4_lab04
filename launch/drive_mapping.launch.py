@@ -18,7 +18,6 @@ def generate_launch_description():
     pkg = FindPackageShare('tb4_lab04')
     args = [
         DeclareLaunchArgument('world', default_value='maze', description='warehouse | depot | maze | small_house'),
-        DeclareLaunchArgument('headless', default_value='false', description='true: khong mo cua so Gazebo (nhe hon)'),
         DeclareLaunchArgument('x', default_value='0.0'),
         DeclareLaunchArgument('y', default_value='0.0'),
         DeclareLaunchArgument('yaw', default_value='0.0'),
@@ -37,7 +36,7 @@ def generate_launch_description():
     sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution([pkg, 'launch', 'sim.launch.py'])),
         launch_arguments={'world': LaunchConfiguration('world'), 'rviz': 'false',
-                          'headless': LaunchConfiguration('headless'), 'x': LaunchConfiguration('x'), 'y': LaunchConfiguration('y'), 'yaw': LaunchConfiguration('yaw'),
+                          'x': LaunchConfiguration('x'), 'y': LaunchConfiguration('y'), 'yaw': LaunchConfiguration('yaw'),
                           'software_render': LaunchConfiguration('software_render')}.items(),
     )
     # Create 3 mac dinh gioi han viec lui ("Reached backup limit"); trong mo phong cho phep lui tu do.
