@@ -31,7 +31,6 @@
             <uri>model://aws_robomaker_residential_FloorB_01/meshes/aws_FloorB_01_visual.DAE</uri>
           </mesh>
         </geometry>
-      <meta> <layer> 1 </layer></meta>
 </visual>
     </link>
 

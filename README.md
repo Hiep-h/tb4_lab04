@@ -66,8 +66,9 @@ ros2 launch tb4_lab04 sim.launch.py world:=maze rviz:=true
 # world: maze | warehouse | depot,  model: standard | lite
 ```
 
-**World `small_house` (nhà ở AWS RoboMaker, bản nhẹ):** giữ tường + sàn gốc, đồ nội thất lớn thay bằng hộp, bỏ đồ trang trí/cửa/đèn/trần
-để Gazebo bớt nặng. Cài một lần (cần `sudo`), rồi chạy với `world:=small_house`:
+**World `small_house` (nhà ở AWS RoboMaker, bản nhẹ):** giữ tường + sàn và các đồ nội thất chính bằng mesh gốc (giường, sofa, tủ bếp,
+tủ lạnh, bàn ăn + ghế, kệ TV...), bỏ đồ trang trí/cửa/đèn/rèm/thảm/trần/bóng cho nhẹ. Nếu máy vẫn lag, dùng `world:=small_house_lite`
+(đồ nội thất thay bằng hộp, nhẹ nhất). Cài một lần (cần `sudo`), rồi chạy:
 ```bash
 ~/tb4_ws/src/tb4_lab04/scripts/install_world.sh
 ros2 launch tb4_lab04 auto_mapping.launch.py world:=small_house x:=1.0 y:=1.0

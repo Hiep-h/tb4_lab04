@@ -19,7 +19,6 @@
             <uri>model://aws_robomaker_residential_HouseWallB_01/meshes/aws_HouseWallB_01_visual.DAE</uri>
           </mesh>
         </geometry>
-      <meta> <layer> 2 </layer></meta>
 </visual>
     </link>
 <static>1</static>

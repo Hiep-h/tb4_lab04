@@ -1,0 +1,313 @@
+<?xml version="1.0" ?>
+<!-- Small House (AWS RoboMaker, MIT-0) - ban nhe cho Ignition Gazebo Fortress:
+     giu tuong + san (mesh goc), do noi that lon thay bang hop, bo toan bo do vat trang tri/cua/den/cua so/tran -->
+<sdf version="1.8">
+  <world name="small_house_lite">
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.003</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin name="ignition::gazebo::systems::Physics" filename="ignition-gazebo-physics-system"/>
+    <plugin name="ignition::gazebo::systems::UserCommands" filename="ignition-gazebo-user-commands-system"/>
+    <plugin name="ignition::gazebo::systems::SceneBroadcaster" filename="ignition-gazebo-scene-broadcaster-system"/>
+    <plugin name="ignition::gazebo::systems::Contact" filename="ignition-gazebo-contact-system"/>
+    <gravity>0 0 -9.8</gravity>
+    <scene>
+      <ambient>0.6 0.6 0.6 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>false</shadows>
+    </scene>
+    <light type="directional" name="sun">
+      <cast_shadows>false</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.3 0.2 -1</direction>
+    </light>
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision"><pose>0 0 -0.05 0 0 0</pose><geometry><plane><normal>0 0 1</normal><size>60 60</size></plane></geometry></collision>
+      </link>
+    </model>
+    <include>
+      <name>HouseWallB_01_001</name>
+      <static>true</static>
+      <uri>model://aws_robomaker_residential_HouseWallB_01</uri>
+      <pose>0.0000 0.0000 0.0000 0.0000 -0.0000 0.0000</pose>
+    </include>
+    <include>
+      <name>FloorB_01_001</name>
+      <static>true</static>
+      <uri>model://aws_robomaker_residential_FloorB_01</uri>
+      <pose>0.0000 0.0000 0.0000 0.0000 -0.0000 0.0000</pose>
+    </include>
+    <include>
+      <name>RoomWall_01_001</name>
+      <static>true</static>
+      <uri>model://aws_robomaker_residential_RoomWall_01</uri>
+      <pose>-6.0976 -1.4962 0.0281 0.0000 -0.0000 0.0000</pose>
+    </include>
+    <model name="AirconditionerB_01_001_0">
+      <static>true</static>
+      <pose>-1.9583 -5.1823 1.0148 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.600 0.500 2.023</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.600 0.500 2.023</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="Bed_01_001_0">
+      <static>true</static>
+      <pose>-6.1348 1.9783 0.6409 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>2.100 1.900 1.282</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>2.100 1.900 1.282</size></box></geometry>
+          <material><ambient>0.55 0.45 0.35 1</ambient><diffuse>0.55 0.45 0.35 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="Bed_01_001_1">
+      <static>true</static>
+      <pose>-6.1848 3.0283 0.6409 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>2.000 0.200 1.282</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>2.000 0.200 1.282</size></box></geometry>
+          <material><ambient>0.55 0.45 0.35 1</ambient><diffuse>0.55 0.45 0.35 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="NightStand_01_001_0">
+      <static>true</static>
+      <pose>-7.6959 2.8709 0.3488 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.800 0.500 0.687</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.800 0.500 0.687</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="NightStand_01_002_0">
+      <static>true</static>
+      <pose>-4.3778 2.8709 0.3488 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.800 0.500 0.687</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.800 0.500 0.687</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="CoffeeTable_01_001_0">
+      <static>true</static>
+      <pose>1.5550 -1.7125 0.2039 0 0 0.0100</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1.400 0.700 0.324</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1.400 0.700 0.324</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="KitchenTable_01_001_0">
+      <static>true</static>
+      <pose>6.5927 0.9120 0.4092 0 0 -1.5641</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.800 1.900 0.818</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.800 1.900 0.818</size></box></geometry>
+          <material><ambient>0.7 0.7 0.65 1</ambient><diffuse>0.7 0.7 0.65 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="ReadingDesk_01_001_0">
+      <static>true</static>
+      <pose>-8.9562 2.0806 0.3718 0 0 -0.0046</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.600 1.200 0.744</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.600 1.200 0.744</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="BalconyTable_01_001_0">
+      <static>true</static>
+      <pose>-0.5368 4.1277 0.2014 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.600 0.600 0.403</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.600 0.600 0.403</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="FitnessEquipment_01_001_0">
+      <static>true</static>
+      <pose>3.8387 2.6620 0.4499 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.600 0.100 0.894</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.600 0.100 0.894</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="FitnessEquipment_01_001_1">
+      <static>true</static>
+      <pose>3.7887 2.8620 0.4499 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.100 0.300 0.894</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.100 0.300 0.894</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="FitnessEquipment_01_001_2">
+      <static>true</static>
+      <pose>3.3887 3.2120 0.4499 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.900 0.400 0.894</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.900 0.400 0.894</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="FitnessEquipment_01_001_3">
+      <static>true</static>
+      <pose>3.7887 3.5120 0.4499 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.100 0.200 0.894</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.100 0.200 0.894</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="FitnessEquipment_01_001_4">
+      <static>true</static>
+      <pose>3.8387 3.7120 0.4499 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.600 0.200 0.894</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.600 0.200 0.894</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="KitchenCabinet_01_001_0">
+      <static>true</static>
+      <pose>8.9426 -3.5196 0.5809 0 0 -3.1400</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.700 2.600 1.138</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.700 2.600 1.138</size></box></geometry>
+          <material><ambient>0.7 0.7 0.65 1</ambient><diffuse>0.7 0.7 0.65 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="KitchenCabinet_01_001_1">
+      <static>true</static>
+      <pose>7.9953 -5.1711 0.5809 0 0 -3.1400</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>2.600 0.700 1.138</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>2.600 0.700 1.138</size></box></geometry>
+          <material><ambient>0.7 0.7 0.65 1</ambient><diffuse>0.7 0.7 0.65 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="Refrigerator_01_001_0">
+      <static>true</static>
+      <pose>8.3324 -1.0130 0.9803 0 0 -1.5635</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.200 0.100 1.961</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.200 0.100 1.961</size></box></geometry>
+          <material><ambient>0.8 0.8 0.85 1</ambient><diffuse>0.8 0.8 0.85 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="Refrigerator_01_001_1">
+      <static>true</static>
+      <pose>8.7827 -1.0597 0.9803 0 0 -1.5635</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1.100 0.800 1.961</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1.100 0.800 1.961</size></box></geometry>
+          <material><ambient>0.8 0.8 0.85 1</ambient><diffuse>0.8 0.8 0.85 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="ShoeRack_01_001_0">
+      <static>true</static>
+      <pose>4.3432 -5.1276 0.5715 0 0 0.0000</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1.000 0.400 1.143</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1.000 0.400 1.143</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="SofaC_01_001_0">
+      <static>true</static>
+      <pose>1.5127 -2.4639 0.5520 0 0 1.5717</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.700 0.100 0.972</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.700 0.100 0.972</size></box></geometry>
+          <material><ambient>0.35 0.45 0.6 1</ambient><diffuse>0.35 0.45 0.6 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="SofaC_01_001_1">
+      <static>true</static>
+      <pose>0.8128 -2.6145 0.5520 0 0 1.5717</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1.000 1.300 0.972</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1.000 1.300 0.972</size></box></geometry>
+          <material><ambient>0.35 0.45 0.6 1</ambient><diffuse>0.35 0.45 0.6 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="SofaC_01_001_2">
+      <static>true</static>
+      <pose>-0.1879 -1.8655 0.5520 0 0 1.5717</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>2.500 0.700 0.972</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>2.500 0.700 0.972</size></box></geometry>
+          <material><ambient>0.35 0.45 0.6 1</ambient><diffuse>0.35 0.45 0.6 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="SofaC_01_001_3">
+      <static>true</static>
+      <pose>-0.6878 -1.9659 0.5520 0 0 1.5717</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>2.300 0.300 0.972</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>2.300 0.300 0.972</size></box></geometry>
+          <material><ambient>0.35 0.45 0.6 1</ambient><diffuse>0.35 0.45 0.6 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="SofaC_01_001_4">
+      <static>true</static>
+      <pose>-0.8872 -2.6161 0.5520 0 0 1.5717</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.200 0.100 0.972</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.200 0.100 0.972</size></box></geometry>
+          <material><ambient>0.35 0.45 0.6 1</ambient><diffuse>0.35 0.45 0.6 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="SofaC_01_001_5">
+      <static>true</static>
+      <pose>-0.8879 -1.8661 0.5520 0 0 1.5717</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.100 0.100 0.972</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.100 0.100 0.972</size></box></geometry>
+          <material><ambient>0.35 0.45 0.6 1</ambient><diffuse>0.35 0.45 0.6 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="SofaC_01_001_6">
+      <static>true</static>
+      <pose>-0.8885 -1.1661 0.5520 0 0 1.5717</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.100 0.100 0.972</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.100 0.100 0.972</size></box></geometry>
+          <material><ambient>0.35 0.45 0.6 1</ambient><diffuse>0.35 0.45 0.6 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="TVCabinet_01_001_0">
+      <static>true</static>
+      <pose>0.7761 -5.1239 0.2375 0 0 1.5792</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.700 2.500 0.509</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.700 2.500 0.509</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="TVCabinet_01_001_1">
+      <static>true</static>
+      <pose>-0.6235 -5.1856 0.2375 0 0 1.5792</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.600 0.300 0.509</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.600 0.300 0.509</size></box></geometry>
+          <material><ambient>0.6 0.5 0.4 1</ambient><diffuse>0.6 0.5 0.4 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="Wardrobe_01_001_0">
+      <static>true</static>
+      <pose>-3.1190 2.4278 1.0730 0 0 -1.5697</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1.100 0.700 2.145</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>1.100 0.700 2.145</size></box></geometry>
+          <material><ambient>0.5 0.35 0.25 1</ambient><diffuse>0.5 0.35 0.25 1</diffuse></material></visual>
+      </link>
+    </model>
+  </world>
+</sdf>
