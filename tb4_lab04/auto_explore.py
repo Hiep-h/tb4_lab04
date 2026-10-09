@@ -35,8 +35,8 @@ class AutoExplore(Node):
     def __init__(self):
         super().__init__('auto_explore')
         for name, default in [('scan_topic', '/scan'), ('map_topic', '/map'), ('cmd_topic', '/cmd_vel'),
-                              ('map_frame', 'map'), ('base_frame', 'base_link'), ('vmax', 0.3), ('wmax', 1.0),
-                              ('inflate_m', 0.25), ('clearance_m', 0.25), ('replan_period', 1.5),
+                              ('map_frame', 'map'), ('base_frame', 'base_link'), ('vmax', 0.45), ('wmax', 1.8),
+                              ('inflate_m', 0.30), ('clearance_m', 0.25), ('replan_period', 1.5),
                               ('start_delay', 3.0), ('max_duration', 1800.0), ('save_on_finish', True), ('min_known_cells', 2000),
                               ('map_dir', '~/tb4_ws/src/tb4_lab04/maps')]:
             self.declare_parameter(name, default)

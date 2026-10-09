@@ -24,7 +24,7 @@ def generate_launch_description():
         DeclareLaunchArgument('explore_delay', default_value='90.0', description='giay truoc khi chay auto_explore'),
         DeclareLaunchArgument('panel_delay', default_value='70.0', description='giay truoc khi mo bang dieu khien'),
         DeclareLaunchArgument('safety_override', default_value='full'),
-        DeclareLaunchArgument('vmax', default_value='0.3', description='toc do tien toi da (m/s)'),
+        DeclareLaunchArgument('vmax', default_value='0.45', description='toc do tien toi da (m/s)'),
         DeclareLaunchArgument('max_duration', default_value='1800.0', description='giay (gio mo phong)'),
     ]
     sim = IncludeLaunchDescription(

@@ -10,11 +10,14 @@ from tb4_lab04 import frontier as F
 
 
 class Explorer:
-    def __init__(self, vmax=0.3, wmax=1.0, lookahead=0.5, factor=2, inflate_m=0.24, clearance_m=0.25,
-                 replan_period=1.5, spin_time=7.5, min_cluster=3, stuck_time=8.0, done_after=3, front_stop=0.28):
-        self.vmax, self.wmax, self.lookahead, self.factor = vmax, wmax, lookahead, factor
+    def __init__(self, vmax=0.3, wmax=1.0, lookahead=None, factor=2, inflate_m=0.24, clearance_m=0.25,
+                 replan_period=1.5, spin_time=None, min_cluster=3, stuck_time=8.0, done_after=3, front_stop=0.28):
+        self.vmax, self.wmax, self.factor = vmax, wmax, factor
+        self.lookahead = lookahead if lookahead is not None else 0.4
+        self.spin_w = min(wmax, 1.5)
         self.inflate_m, self.clearance_m = inflate_m, clearance_m
-        self.replan_period, self.spin_time = replan_period, spin_time
+        self.replan_period = replan_period
+        self.spin_time = spin_time if spin_time is not None else 2 * math.pi / self.spin_w * 1.05   # dung 1 vong
         self.min_cluster, self.stuck_time, self.done_after = min_cluster, stuck_time, done_after
         self.front_stop = front_stop
         self.state = 'spin'
@@ -69,16 +72,16 @@ class Explorer:
             return 0.0, 0.0, 'done'
         if self.state == 'spin':
             if t - self.t_start < self.spin_time:
-                return 0.0, 0.8, 'spin'
+                return 0.0, self.spin_w, 'spin'
             self.state = 'explore'
             self.progress_t, self.progress_xy = t, (pose[0], pose[1])
         # phuc hoi sau khi ket: quay tai cho
         if t < self.recover_until:
-            return 0.0, 0.8 * self.recover_dir, 'phuc_hoi'
+            return 0.0, self.spin_w * self.recover_dir, 'phuc_hoi'
         # an toan phan xa: vat can sat truoc mat -> quay
         if front_dist is not None and front_dist < self.front_stop:
             self.last_plan_t = -1e9
-            return 0.0, 0.8, 'ne_vat_can'
+            return 0.0, self.spin_w, 'ne_vat_can'
 
         reached = bool(self.path) and math.hypot(self.path[-1][0] - pose[0], self.path[-1][1] - pose[1]) < 0.3
         if reached or not self.path or t - self.last_plan_t >= self.replan_period:
@@ -108,7 +111,7 @@ class Explorer:
             self.recover_dir = -self.recover_dir
             self.progress_t, self.progress_xy = t, (pose[0], pose[1])
             self.path = []
-            return 0.0, 0.8 * self.recover_dir, 'ket_quay'
+            return 0.0, self.spin_w * self.recover_dir, 'ket_quay'
 
         v, w, remaining = F.pure_pursuit(self.path, pose, self.lookahead, self.vmax, self.wmax)
         return v, w, 'kham_pha'
