@@ -37,7 +37,7 @@ class AutoExplore(Node):
         for name, default in [('scan_topic', '/scan'), ('map_topic', '/map'), ('cmd_topic', '/cmd_vel'),
                               ('map_frame', 'map'), ('base_frame', 'base_link'), ('vmax', 0.3), ('wmax', 1.0),
                               ('inflate_m', 0.25), ('clearance_m', 0.25), ('replan_period', 1.5),
-                              ('start_delay', 3.0), ('max_duration', 1800.0), ('save_on_finish', True),
+                              ('start_delay', 3.0), ('max_duration', 1800.0), ('save_on_finish', True), ('min_known_cells', 2000),
                               ('map_dir', '~/tb4_ws/src/tb4_lab04/maps')]:
             self.declare_parameter(name, default)
         g = self.get_parameter
@@ -46,6 +46,8 @@ class AutoExplore(Node):
         self.map_frame, self.base_frame = g('map_frame').value, g('base_frame').value
         self.start_delay, self.max_duration = g('start_delay').value, g('max_duration').value
         self.save_on_finish = g('save_on_finish').value
+        self.min_known_cells = g('min_known_cells').value
+        self.empty_warned_t = -1e9
         self.saver = MapSaver(g('map_dir').value)
 
         self.pub = self.create_publisher(Twist, g('cmd_topic').value, 10)
@@ -116,6 +118,17 @@ class AutoExplore(Node):
         v, w, state = self.explorer.update(t, grid, res, origin, pose, self.front)
         self.last_state = state
         if state == 'done':
+            known_cells = int(np.count_nonzero(grid != -1))
+            if known_cells < self.min_known_cells:
+                # ban do SLAM con qua nho: khong ket luan "da xong" va khong luu ban do rong
+                if t - self.empty_warned_t > 10.0:
+                    self.empty_warned_t = t
+                    self.get_logger().warn('Ban do SLAM gan nhu RONG (%d o da biet < %d): slam_toolbox chua tao ban do '
+                                           'tu /scan. Khong ket thuc, khong luu ban do.' % (known_cells, self.min_known_cells))
+                self.explorer.state = 'explore'
+                self.explorer.no_goal_count = 0
+                self._stop()
+                return
             self._finish('khong con vung chua biet nao toi duoc')
             return
         cmd = Twist()
