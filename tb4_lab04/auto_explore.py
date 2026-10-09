@@ -144,8 +144,11 @@ class AutoExplore(Node):
             grid = self.map[0]
             known = '%d%%' % (100 * np.count_nonzero(grid != -1) // max(1, grid.size))
         pose = self._pose()
-        self.get_logger().info('trang thai=%s, t=%.0fs, vi tri=%s, o da biet=%s, tia LiDAR huu han=%d/%d' % (
-            self.last_state, self._now(), 'chua co TF' if pose is None else '(%.1f, %.1f)' % pose[:2], known, fin, tot))
+        ex = self.explorer
+        goal = 'khong' if ex.goal_xy is None else '(%.1f, %.1f)' % ex.goal_xy
+        self.get_logger().info('trang thai=%s, t=%.0fs, vi tri=%s, dich=%s, doan_duong=%d, cam=%d, truoc=%s, o da biet=%s, tia LiDAR huu han=%d/%d' % (
+            self.last_state, self._now(), 'chua co TF' if pose is None else '(%.1f, %.1f)' % pose[:2], goal, len(ex.path),
+            len(ex.blacklist), 'n/a' if self.front is None else '%.2f' % self.front, known, fin, tot))
         # canh bao neu LiDAR khong thay gi (tat ca tia = inf)
         if tot > 0 and fin / tot < 0.02:
             self.blind_since = self.blind_since or self._now()
