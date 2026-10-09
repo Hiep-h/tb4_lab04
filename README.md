@@ -15,13 +15,16 @@ tb4_lab04/
 │   ├── localization.launch.py   # Phần 3: nạp map.yaml + localization + RViz2
 │   ├── navigation.launch.py     # Phần 4: Nav2
 │   ├── survey.launch.py         # (tuỳ chọn) robot tự lái khảo sát để vẽ map
-│   └── drive_mapping.launch.py  # MỘT LỆNH: Gazebo + SLAM + RViz2 + bảng điều khiển (lái tay, tự lưu map)
+│   ├── drive_mapping.launch.py  # MỘT LỆNH: Gazebo + SLAM + RViz2 + bảng điều khiển (lái tay, tự lưu map)
+│   └── auto_mapping.launch.py   # MỘT LỆNH: robot TỰ KHÁM PHÁ vẽ map nhanh, tự lưu khi xong
 ├── maps/                        # map.yaml + map.pgm (sinh ở Phần 2)
 ├── config/                      # cấu hình tuỳ chỉnh (nếu có)
 ├── scripts/
 │   ├── check_topics.sh          # kiểm tra /scan, /odom, /cmd_vel
 │   └── save_map.sh              # lưu bản đồ vào maps/
 ├── tb4_lab04/
+│   ├── auto_explore.py          # node tự khám phá theo biên (frontier), tự lưu map khi xong
+│   ├── explorer.py, frontier.py # thuật toán khám phá (thuần Python, kiểm thử được không cần ROS)
 │   ├── control_panel.py         # bảng điều khiển thanh trượt (Tkinter) thay teleop bàn phím
 │   ├── auto_survey.py           # node tự lái khảo sát (thay teleop) bằng LiDAR
 │   └── wall_follow.py           # thuật toán bám tường bên phải (không phụ thuộc ROS)
@@ -94,7 +97,13 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 Lái chậm, đi dọc các bức tường, quay vòng ở ngã rẽ, đi qua mọi hành lang. Theo dõi bản đồ trên RViz2; nếu thấy tường bị nhân đôi/lệch thì dừng, lái lại qua vùng đó (loop closure) hoặc làm lại từ đầu.
 
-**Cách nhanh nhất – một lệnh mở tất cả, bạn tự lái bằng bảng thanh trượt:**
+**Robot tự khám phá và vẽ map (nhanh nhất, không cần lái):**
+```bash
+ros2 launch tb4_lab04 auto_mapping.launch.py world:=maze
+```
+Mở Gazebo, SLAM Toolbox + RViz2, rồi node `auto_explore`: robot xoay một vòng lấy bản đồ ban đầu, sau đó liên tục chọn **vùng chưa biết gần nhất** (biên: ô trống kề ô chưa biết), lập đường đi ngắn nhất tránh vật cản (Dijkstra trên bản đồ đã phồng quanh tường) và bám đường đi, lặp lại cho tới khi hết vùng chưa biết rồi dừng và **tự lưu** `maps/map.yaml` + `maps/map.pgm`. Log mỗi 5 giây in trạng thái, vị trí, % ô đã biết và số tia LiDAR hợp lệ; nếu LiDAR không thấy gì sẽ có cảnh báo. Tham số: `vmax:=0.3` (m/s), `map_dir:=<thư mục>`, `max_duration:=<giây>`. Đề bài ghi khảo sát bằng teleoperation; nếu nộp bằng chế độ tự khám phá, hãy nêu rõ trong báo cáo/video (hoặc dùng `drive_mapping.launch.py` để lái tay).
+
+**Cách một lệnh mở tất cả, bạn tự lái bằng bảng thanh trượt:**
 ```bash
 ros2 launch tb4_lab04 drive_mapping.launch.py world:=maze
 ```

@@ -25,6 +25,7 @@ setup(
         'console_scripts': [
             'auto_survey = tb4_lab04.auto_survey:main',
             'control_panel = tb4_lab04.control_panel:main',
+            'auto_explore = tb4_lab04.auto_explore:main',
         ],
     },
 )
