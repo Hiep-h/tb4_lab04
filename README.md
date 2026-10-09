@@ -75,6 +75,12 @@ ros2 launch tb4_lab04 auto_mapping.launch.py world:=small_house x:=1.0 y:=1.0
 ```
 Nguồn: [aws-robotics/aws-robomaker-small-house-world](https://github.com/aws-robotics/aws-robomaker-small-house-world) (MIT-0, xem `models/LICENSE-AWS-small-house`).
 
+**Nếu Gazebo rất chậm (Real Time Factor góc dưới phải cửa sổ < vài %):** mặc định LiDAR chạy 62 Hz × 640 tia và camera RGB-D 30 Hz,
+dựng bằng phần mềm rất nặng. Hạ xuống LiDAR 10 Hz × 360 tia, camera 2 Hz (cần `sudo`, chạy một lần):
+```bash
+~/tb4_ws/src/tb4_lab04/scripts/lighten_sensors.sh          # hoàn tác: lighten_sensors.sh restore
+```
+
 Bấm nút ▶ (Play) ở góc dưới trái cửa sổ Gazebo nếu mô phỏng đang tạm dừng.
 
 **Terminal 2 – kiểm tra topic:**
