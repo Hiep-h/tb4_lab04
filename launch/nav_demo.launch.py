@@ -20,7 +20,7 @@ def generate_launch_description():
         DeclareLaunchArgument('x', default_value='1.0', description='vi tri xuat phat trong world (giong luc ve map)'),
         DeclareLaunchArgument('y', default_value='1.0'),
         DeclareLaunchArgument('yaw', default_value='0.0'),
-        DeclareLaunchArgument('map', default_value=PathJoinSubstitution([pkg, 'maps', 'map.yaml'])),
+        DeclareLaunchArgument('map', default_value=PathJoinSubstitution([pkg, 'maps', 'map_clean.yaml']), description='map.yaml (mac dinh ban da lam sach); dung maps/map.yaml de dung ban goc cua SLAM'),
         DeclareLaunchArgument('software_render', default_value='true'),
         DeclareLaunchArgument('loc_delay', default_value='60.0', description='giay cho Gazebo len roi chay dinh vi'),
         DeclareLaunchArgument('nav_delay', default_value='90.0', description='giay truoc khi chay Nav2'),
