@@ -17,7 +17,10 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     pkg = FindPackageShare('tb4_lab04')
     args = [
-        DeclareLaunchArgument('world', default_value='maze', description='warehouse | depot | maze'),
+        DeclareLaunchArgument('world', default_value='maze', description='warehouse | depot | maze | small_house'),
+        DeclareLaunchArgument('x', default_value='0.0'),
+        DeclareLaunchArgument('y', default_value='0.0'),
+        DeclareLaunchArgument('yaw', default_value='0.0'),
         DeclareLaunchArgument('map_dir', default_value=os.path.expanduser('~/tb4_ws/src/tb4_lab04/maps')),
         DeclareLaunchArgument('software_render', default_value='true', description='dung hinh bang phan mem (sua LiDAR toan 0.0 tren card Intel)'),
         DeclareLaunchArgument('mapping_delay', default_value='60.0', description='giay cho Gazebo len roi moi chay SLAM + RViz2'),
@@ -30,6 +33,7 @@ def generate_launch_description():
     sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(PathJoinSubstitution([pkg, 'launch', 'sim.launch.py'])),
         launch_arguments={'world': LaunchConfiguration('world'), 'rviz': 'false',
+                          'x': LaunchConfiguration('x'), 'y': LaunchConfiguration('y'), 'yaw': LaunchConfiguration('yaw'),
                           'software_render': LaunchConfiguration('software_render')}.items(),
     )
     safety = TimerAction(period=30.0, actions=[ExecuteProcess(

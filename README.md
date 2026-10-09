@@ -65,6 +65,15 @@ Mỗi terminal mới đều cần: `source /opt/ros/humble/setup.bash && source 
 ros2 launch tb4_lab04 sim.launch.py world:=maze rviz:=true
 # world: maze | warehouse | depot,  model: standard | lite
 ```
+
+**World `small_house` (nhà ở AWS RoboMaker, bản nhẹ):** giữ tường + sàn gốc, đồ nội thất lớn thay bằng hộp, bỏ đồ trang trí/cửa/đèn/trần
+để Gazebo bớt nặng. Cài một lần (cần `sudo`), rồi chạy với `world:=small_house`:
+```bash
+~/tb4_ws/src/tb4_lab04/scripts/install_world.sh
+ros2 launch tb4_lab04 auto_mapping.launch.py world:=small_house x:=1.0 y:=1.0
+```
+Nguồn: [aws-robotics/aws-robomaker-small-house-world](https://github.com/aws-robotics/aws-robomaker-small-house-world) (MIT-0, xem `models/LICENSE-AWS-small-house`).
+
 Bấm nút ▶ (Play) ở góc dưới trái cửa sổ Gazebo nếu mô phỏng đang tạm dừng.
 
 **Terminal 2 – kiểm tra topic:**
