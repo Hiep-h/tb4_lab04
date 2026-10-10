@@ -7,7 +7,8 @@ import os
 
 from launch import LaunchDescription
 from launch.actions import (DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription,
-                            TimerAction, UnsetEnvironmentVariable)
+                            RegisterEventHandler, TimerAction, UnsetEnvironmentVariable)
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
@@ -22,9 +23,6 @@ def generate_launch_description():
         DeclareLaunchArgument('yaw', default_value='0.0'),
         DeclareLaunchArgument('map', default_value=PathJoinSubstitution([pkg, 'maps', 'map_clean.yaml']), description='map.yaml (mac dinh ban da lam sach); dung maps/map.yaml de dung ban goc cua SLAM'),
         DeclareLaunchArgument('software_render', default_value='true'),
-        DeclareLaunchArgument('loc_delay', default_value='60.0', description='giay cho Gazebo len roi chay dinh vi'),
-        DeclareLaunchArgument('nav_delay', default_value='90.0', description='giay truoc khi chay Nav2'),
-        DeclareLaunchArgument('pose_delay', default_value='80.0', description='giay truoc khi dat vi tri ban dau'),
         DeclareLaunchArgument('safety_override', default_value='full'),
     ]
     sim = IncludeLaunchDescription(
@@ -39,7 +37,16 @@ def generate_launch_description():
         cmd=['bash', '-c', 'for i in $(seq 1 40); do ros2 param set /motion_control safety_override '
              + '$0 && break; sleep 5; done', LaunchConfiguration('safety_override')], output='screen')])
     nav_pkg = FindPackageShare('turtlebot4_navigation')
-    localization = TimerAction(period=LaunchConfiguration('loc_delay'), actions=[
+
+    def wait_for(shell_cond, name):
+        """Chay lenh doi toi khi dieu kien dung (toi da ~20 phut) - thay cho moi moc thoi gian co dinh."""
+        return ExecuteProcess(
+            cmd=['bash', '-c', 'for i in $(seq 1 240); do (%s) >/dev/null 2>&1 && exit 0; sleep 5; done; exit 0' % shell_cond],
+            name=name, output='log')
+
+    # 1) doi Gazebo + bo dieu khien san sang, roi moi chay dinh vi + RViz2 (tranh tranh CPU luc Gazebo dang nap world)
+    wait_sim = wait_for("ros2 control list_controllers | grep -Ei 'diff_?drive_controller.*active'", 'wait_sim')
+    localization = [
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(PathJoinSubstitution([nav_pkg, 'launch', 'localization.launch.py'])),
             launch_arguments={'map': LaunchConfiguration('map'), 'use_sim_time': 'true'}.items()),
@@ -47,14 +54,18 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(PathJoinSubstitution(
                 [FindPackageShare('turtlebot4_viz'), 'launch', 'view_robot.launch.py'])),
             launch_arguments={'use_sim_time': 'true'}.items()),
-    ])
-    nav2 = TimerAction(period=LaunchConfiguration('nav_delay'), actions=[IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(PathJoinSubstitution([nav_pkg, 'launch', 'nav2.launch.py'])),
-        launch_arguments={'use_sim_time': 'true'}.items())])
+    ]
+    # 2) doi AMCL active, roi dat vi tri ban dau va chay Nav2
+    wait_amcl = wait_for("ros2 lifecycle get /amcl | grep -qi active", 'wait_amcl')
     cov = '[' + ', '.join(['0.25' if i in (0, 7) else '0.07' if i == 35 else '0.0' for i in range(36)]) + ']'
     pose = ('{header: {frame_id: map}, pose: {pose: {position: {x: 0.0, y: 0.0, z: 0.0}, '
             'orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0}}, covariance: %s}}' % cov)
-    initial = TimerAction(period=LaunchConfiguration('pose_delay'), actions=[ExecuteProcess(
+    initial = ExecuteProcess(
         cmd=['ros2', 'topic', 'pub', '-t', '8', '-r', '1', '/initialpose',
-             'geometry_msgs/msg/PoseWithCovarianceStamped', pose], output='screen')])
-    return LaunchDescription(args + [sim, unset, safety, localization, initial, nav2])
+             'geometry_msgs/msg/PoseWithCovarianceStamped', pose], output='screen')
+    nav2 = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(PathJoinSubstitution([nav_pkg, 'launch', 'nav2.launch.py'])),
+        launch_arguments={'use_sim_time': 'true'}.items())
+    on_sim = RegisterEventHandler(OnProcessExit(target_action=wait_sim, on_exit=localization + [wait_amcl]))
+    on_amcl = RegisterEventHandler(OnProcessExit(target_action=wait_amcl, on_exit=[initial, nav2]))
+    return LaunchDescription(args + [sim, unset, safety, wait_sim, on_sim, on_amcl])
