@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-"""Node tu kham pha de SLAM Toolbox ve ban do nhanh (thay cho lai tay / bam tuong).
-
-Doc /map (tu slam_toolbox) + TF (map -> base_link) + /scan, chon bien (ranh gioi trong/chua biet) gan nhat theo
-duong di that, lap duong tranh vat can va bam duong bang pure pursuit, publish /cmd_vel. Khi het bien thi dung robot
-va tu luu ban do (map.yaml + map.pgm). Ctrl+C luon dung robot an toan.
-"""
 import math
 
 import numpy as np
@@ -22,7 +16,6 @@ from tb4_lab04.wall_follow import sector_min
 
 
 def grid_from_msg(msg):
-    """OccupancyGrid -> (mang int16 (h, w), do phan giai, goc (ox, oy))."""
     grid = np.array(msg.data, dtype=np.int16).reshape(msg.info.height, msg.info.width)
     return grid, float(msg.info.resolution), (msg.info.origin.position.x, msg.info.origin.position.y)
 
@@ -60,7 +53,7 @@ class AutoExplore(Node):
 
         self.map = None
         self.front = None
-        self.scan_stats = (0, 0)       # (so tia huu han, tong so tia)
+        self.scan_stats = (0, 0)
         self.blind_since = None
         self.done = False
         self.t0 = self.get_clock().now()
@@ -84,7 +77,7 @@ class AutoExplore(Node):
     def _pose(self):
         try:
             t = self.tf_buffer.lookup_transform(self.map_frame, self.base_frame, rclpy.time.Time())
-        except Exception:  # noqa: BLE001
+        except Exception:
             return None
         p, q = t.transform.translation, t.transform.rotation
         return p.x, p.y, yaw_from_quat(q)
@@ -120,7 +113,7 @@ class AutoExplore(Node):
         if state == 'done':
             known_cells = int(np.count_nonzero(grid != -1))
             if known_cells < self.min_known_cells:
-                # ban do SLAM con qua nho: khong ket luan "da xong" va khong luu ban do rong
+
                 if t - self.empty_warned_t > 10.0:
                     self.empty_warned_t = t
                     self.get_logger().warn('Ban do SLAM gan nhu RONG (%d o da biet < %d): slam_toolbox chua tao ban do '
@@ -149,7 +142,7 @@ class AutoExplore(Node):
         self.get_logger().info('trang thai=%s, t=%.0fs, vi tri=%s, dich=%s, doan_duong=%d, cam=%d, truoc=%s, o da biet=%s, tia LiDAR huu han=%d/%d' % (
             self.last_state, self._now(), 'chua co TF' if pose is None else '(%.1f, %.1f)' % pose[:2], goal, len(ex.path),
             len(ex.blacklist), 'n/a' if self.front is None else '%.2f' % self.front, known, fin, tot))
-        # canh bao neu LiDAR khong thay gi (tat ca tia = inf)
+
         if tot > 0 and fin / tot < 0.02:
             self.blind_since = self.blind_since or self._now()
             if self._now() - self.blind_since > 15.0:

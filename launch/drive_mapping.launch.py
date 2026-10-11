@@ -1,8 +1,3 @@
-"""Mot lenh mo tat ca de TU LAI (bang thanh truot) va ve ban do: Gazebo + SLAM Toolbox + RViz2 + bang dieu khien.
-
-Ban do hien tren RViz2 khi lai; bang dieu khien co nut luu ban do, tu luu dinh ky va tu luu khi dong bang.
-    ros2 launch tb4_lab04 drive_mapping.launch.py world:=maze
-"""
 import os
 
 from launch import LaunchDescription
@@ -39,7 +34,7 @@ def generate_launch_description():
                           'x': LaunchConfiguration('x'), 'y': LaunchConfiguration('y'), 'yaw': LaunchConfiguration('yaw'),
                           'software_render': LaunchConfiguration('software_render')}.items(),
     )
-    # Create 3 mac dinh gioi han viec lui ("Reached backup limit"); trong mo phong cho phep lui tu do.
+
     safety = TimerAction(period=30.0, actions=[ExecuteProcess(
         cmd=['bash', '-c', 'for i in $(seq 1 40); do ros2 param set /motion_control safety_override '
              + '$0 && break; sleep 5; done', LaunchConfiguration('safety_override')],
@@ -54,6 +49,6 @@ def generate_launch_description():
             'max_linear': LaunchConfiguration('max_linear'),
             'max_angular': LaunchConfiguration('max_angular'),
         }])])
-    # chi Gazebo dung hinh bang phan mem; cac tien trinh sau (RViz2, SLAM...) dung card do hoa binh thuong
+
     unset = UnsetEnvironmentVariable(name='LIBGL_ALWAYS_SOFTWARE')
     return LaunchDescription(args + [sim, unset, safety, mapping, panel])

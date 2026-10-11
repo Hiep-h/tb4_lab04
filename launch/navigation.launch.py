@@ -1,4 +1,3 @@
-"""Phan 4: Nav2 (chay cung localization, dung map da luu)."""
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource

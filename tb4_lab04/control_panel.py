@@ -1,15 +1,4 @@
 #!/usr/bin/env python3
-"""Bang dieu khien TurtleBot 4 bang thanh truot (Tkinter), thay cho teleop ban phim tren terminal.
-
-Chay:  ros2 run tb4_lab04 control_panel
-       ros2 run tb4_lab04 control_panel --ros-args -p max_linear:=0.3 -p max_angular:=1.0
-
-- Thanh "Tien / Lui" -> van toc thang (m/s); thanh "Xoay tron" -> van toc quay (rad/s).
-- TurtleBot 4 la robot hai banh vi sai nen khong co truot ngang nhu xe Mecanum.
-- Phim: SPACE = phanh khan cap, mui ten len/xuong = tang/giam toc, trai/phai = quay.
-- "Chong va cham": tu chan lenh tien khi vat can phia truoc gan hon nguong (dung /scan).
-- "Tu lai (bam tuong)": robot tu bam tuong ben phai bang LiDAR de khao sat ve ban do.
-"""
 import math
 import os
 import subprocess
@@ -17,7 +6,7 @@ import threading
 import time
 import tkinter as tk
 
-from tb4_lab04.map_saver import MapSaver  # noqa: F401  (giu ten cu de tuong thich)
+from tb4_lab04.map_saver import MapSaver
 from tb4_lab04.wall_follow import Params, compute_cmd
 
 FONT = ('DejaVu Sans', 10)
@@ -170,7 +159,6 @@ class Panel:
 
 
 class RosBridge:
-    """Dong goi ROS 2: publish /cmd_vel, doc /scan. Tach rieng de GUI kiem thu duoc khong can ROS."""
 
     def __init__(self, node, twist_cls, scan_cls, qos, cmd_topic, scan_topic):
         self.node, self.Twist = node, twist_cls

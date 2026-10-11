@@ -1,7 +1,3 @@
-"""Bo nao kham pha tu dong (thuan Python, khong phu thuoc ROS): nhan ban do + vi tri, tra ve lenh van toc.
-
-Trang thai: 'spin' (xoay tai cho 1 vong de co ban do ban dau) -> 'explore' (di toi bien gan nhat) -> 'done'.
-"""
 import math
 
 import numpy as np
@@ -17,16 +13,16 @@ class Explorer:
         self.spin_w = min(wmax, 1.5)
         self.inflate_m, self.clearance_m = inflate_m, clearance_m
         self.replan_period = replan_period
-        self.spin_time = spin_time if spin_time is not None else 2 * math.pi / self.spin_w * 1.05   # dung 1 vong
+        self.spin_time = spin_time if spin_time is not None else 2 * math.pi / self.spin_w * 1.05
         self.min_cluster, self.stuck_time, self.done_after = min_cluster, stuck_time, done_after
         self.front_stop = front_stop
         self.state = 'spin'
         self.t_start = None
-        self.path = []            # danh sach (x, y) the gioi
+        self.path = []
         self.goal_xy = None
         self.last_plan_t = -1e9
         self.no_goal_count = 0
-        self.blacklist = []       # (row, col) o luoi giam do phan giai
+        self.blacklist = []
         self.progress_t = None
         self.progress_xy = None
         self.recover_until = -1.0
@@ -34,7 +30,7 @@ class Explorer:
         self.last_info = ''
         self.goal_cells = None
 
-    # ---- lap ke hoach ----
+
     def _plan(self, grid, res, origin, pose):
         f = self.factor
         g = F.downsample(grid, f)
@@ -47,7 +43,7 @@ class Explorer:
         if not (0 <= sr < h and 0 <= sc < w):
             return None
         free, pen = F.traversable(g, self.inflate_m / r2, self.clearance_m / r2)
-        # cho phep robot di ra khoi vung phong rong xung quanh no
+
         rr0, rr1, cc0, cc1 = max(0, sr - 2), min(h, sr + 3), max(0, sc - 2), min(w, sc + 3)
         blk = g[rr0:rr1, cc0:cc1]
         free[rr0:rr1, cc0:cc1] |= (blk == F.FREE)
@@ -62,9 +58,8 @@ class Explorer:
         self.goal_cells = (best[0], best[1])
         return F.smooth(pts, 0.15), len(cl)
 
-    # ---- vong lap dieu khien ----
+
     def update(self, t, grid, res, origin, pose, front_dist=None):
-        """Tra ve (v, w, state). grid: mang (h, w) int; pose = (x, y, yaw) trong khung map."""
         if self.t_start is None:
             self.t_start = t
             self.progress_t, self.progress_xy = t, (pose[0], pose[1])
@@ -75,10 +70,10 @@ class Explorer:
                 return 0.0, self.spin_w, 'spin'
             self.state = 'explore'
             self.progress_t, self.progress_xy = t, (pose[0], pose[1])
-        # phuc hoi sau khi ket: quay tai cho
+
         if t < self.recover_until:
             return 0.0, self.spin_w * self.recover_dir, 'phuc_hoi'
-        # an toan phan xa: vat can sat truoc mat -> quay
+
         if front_dist is not None and front_dist < self.front_stop:
             self.last_plan_t = -1e9
             return 0.0, self.spin_w, 'ne_vat_can'
@@ -88,7 +83,7 @@ class Explorer:
             self.last_plan_t = t
             res_plan = self._plan(grid, res, origin, pose)
             if res_plan is None and self.blacklist:
-                self.blacklist = []                      # thu lai khong co danh sach den truoc khi ket luan het bien
+                self.blacklist = []
                 res_plan = self._plan(grid, res, origin, pose)
             if res_plan is None:
                 self.no_goal_count += 1
@@ -101,7 +96,7 @@ class Explorer:
             self.path = res_plan[0]
             self.goal_xy = self.path[-1]
 
-        # phat hien ket: it di chuyen trong stuck_time giay
+
         if math.hypot(pose[0] - self.progress_xy[0], pose[1] - self.progress_xy[1]) > 0.2:
             self.progress_t, self.progress_xy = t, (pose[0], pose[1])
         elif t - self.progress_t > self.stuck_time:

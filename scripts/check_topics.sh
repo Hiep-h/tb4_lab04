@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Phan 1: kiem tra /scan, /odom, /cmd_vel (chay khi mo phong dang chay).
 set -u
 source /opt/ros/humble/setup.bash
 echo "== Danh sach topic =="; ros2 topic list

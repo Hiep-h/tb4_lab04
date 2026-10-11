@@ -1,4 +1,3 @@
-"""Phan 1: TurtleBot 4 trong Gazebo (Ignition) - dung launch co san cua turtlebot4_ignition_bringup."""
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
 from launch.conditions import IfCondition

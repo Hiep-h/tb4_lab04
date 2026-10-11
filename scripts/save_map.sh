@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Phan 2: luu ban do (map.yaml + map.pgm) vao thu muc maps/ cua repo.
-# Dung: scripts/save_map.sh [thu_muc_dich]   (mac dinh: ../maps)
 set -e
 source /opt/ros/humble/setup.bash
 OUT="${1:-$(cd "$(dirname "$0")/.." && pwd)/maps}"

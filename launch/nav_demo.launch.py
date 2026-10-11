@@ -1,8 +1,3 @@
-"""Phan 3 + 4 mot lenh: mo phong + dinh vi (AMCL, nap map da luu) + Nav2 + RViz2.
-
-Robot xuat phat dung cho da dung khi ve map (x:=1.0 y:=1.0 yaw:=0.0) nen tu dat vi tri ban dau (0, 0, 0) trong khung map
-(goc khung map cua SLAM la cho robot xuat phat). Sau do dat cac diem dich bang cong cu "Nav2 Goal" trong RViz2.
-"""
 import os
 
 from launch import LaunchDescription
@@ -31,7 +26,7 @@ def generate_launch_description():
                           'x': LaunchConfiguration('x'), 'y': LaunchConfiguration('y'), 'yaw': LaunchConfiguration('yaw'),
                           'software_render': LaunchConfiguration('software_render')}.items(),
     )
-    # chi Gazebo dung hinh bang phan mem
+
     unset = UnsetEnvironmentVariable(name='LIBGL_ALWAYS_SOFTWARE')
     safety = TimerAction(period=30.0, actions=[ExecuteProcess(
         cmd=['bash', '-c', 'for i in $(seq 1 40); do ros2 param set /motion_control safety_override '
@@ -39,12 +34,11 @@ def generate_launch_description():
     nav_pkg = FindPackageShare('turtlebot4_navigation')
 
     def wait_for(shell_cond, name):
-        """Chay lenh doi toi khi dieu kien dung (toi da ~20 phut) - thay cho moi moc thoi gian co dinh."""
         return ExecuteProcess(
             cmd=['bash', '-c', 'for i in $(seq 1 240); do (%s) >/dev/null 2>&1 && exit 0; sleep 5; done; exit 0' % shell_cond],
             name=name, output='log')
 
-    # 1) doi Gazebo + bo dieu khien san sang, roi moi chay dinh vi + RViz2 (tranh tranh CPU luc Gazebo dang nap world)
+
     wait_sim = wait_for("ros2 control list_controllers | grep -Ei 'diff_?drive_controller.*active'", 'wait_sim')
     localization = [
         IncludeLaunchDescription(
@@ -55,7 +49,7 @@ def generate_launch_description():
                 [FindPackageShare('turtlebot4_viz'), 'launch', 'view_robot.launch.py'])),
             launch_arguments={'use_sim_time': 'true'}.items()),
     ]
-    # 2) doi AMCL active, roi dat vi tri ban dau va chay Nav2
+
     wait_amcl = wait_for("ros2 lifecycle get /amcl | grep -qi active", 'wait_amcl')
     cov = '[' + ', '.join(['0.25' if i in (0, 7) else '0.07' if i == 35 else '0.0' for i in range(36)]) + ']'
     pose = ('{header: {frame_id: map}, pose: {pose: {position: {x: 0.0, y: 0.0, z: 0.0}, '

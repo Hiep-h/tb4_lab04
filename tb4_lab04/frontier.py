@@ -1,12 +1,3 @@
-"""Thuat toan kham pha theo bien (frontier) - thuan tuy numpy, khong phu thuoc ROS de kiem thu duoc.
-
-Y tuong: tren ban do chiem dung (OccupancyGrid), "bien" la o trong (free) nam sat o chua biet (unknown).
-Robot tu chon bien o gan nhat theo DUONG DI THAT (Dijkstra tren cac o trong da phong rong quanh vat can),
-di toi do, ban do lon them, lap lai cho den khi khong con bien nao toi duoc.
-
-Quy uoc luoi: mang numpy shape (h, w); gia tri -1 chua biet, 0 trong, 100 vat can. Toa do o (row, col);
-the gioi: x = ox + (col + 0.5) * res, y = oy + (row + 0.5) * res.
-"""
 import heapq
 import math
 
@@ -16,8 +7,6 @@ UNKNOWN, FREE, OCC = -1, 0, 100
 
 
 def downsample(grid, factor):
-    """Giam do phan giai (bao thu): co 1 o vat can trong khoi -> vat can; neu khong, trong khi so o trong >= so o chua biet.
-    Cung chuan hoa gia tri: <0 chua biet, 0..64 trong, >=65 vat can."""
     grid = np.asarray(grid)
     if factor <= 1:
         out = np.full(grid.shape, UNKNOWN, dtype=np.int16)
@@ -37,7 +26,6 @@ def downsample(grid, factor):
 
 
 def _shift(a, dr, dc):
-    """Tra ve b sao cho b[r, c] = a[r - dr, c - dc] (o ngoai bien = False)."""
     h, w = a.shape
     b = np.zeros_like(a)
     rs, re = max(0, dr), h + min(0, dr)
@@ -48,7 +36,6 @@ def _shift(a, dr, dc):
 
 
 def dilate(mask, radius_cells):
-    """Phong rong mat na boolean theo hinh dia."""
     if radius_cells <= 0:
         return mask.copy()
     out = mask.copy()
@@ -61,7 +48,6 @@ def dilate(mask, radius_cells):
 
 
 def frontier_mask(grid):
-    """O trong co it nhat 1 o chua biet trong 8 o lang gieng."""
     unk = grid == UNKNOWN
     near_unk = np.zeros_like(unk)
     for dr in (-1, 0, 1):
@@ -72,10 +58,9 @@ def frontier_mask(grid):
 
 
 def traversable(grid, inflate_cells, clearance_cells=0):
-    """Mat na o di duoc (trong, khong gan vat can) va ban do chi phi phat khi gan vat can."""
     occ = grid >= 65
     blocked = dilate(occ, inflate_cells)
-    # o chua biet khong di duoc (an toan); bien van toi duoc vi no la o trong
+
     free = (grid == FREE) & ~blocked
     penalty = np.zeros(grid.shape, dtype=np.float32)
     if clearance_cells > 0:
@@ -85,7 +70,6 @@ def traversable(grid, inflate_cells, clearance_cells=0):
 
 
 def dijkstra(free, penalty, start):
-    """Dijkstra 8 huong tu o start (row, col) tren cac o free. Tra ve (dist, parent) dang mang phang."""
     h, w = free.shape
     n = h * w
     dist = np.full(n, np.inf, dtype=np.float64)
@@ -93,7 +77,7 @@ def dijkstra(free, penalty, start):
     sr, sc = start
     if not (0 <= sr < h and 0 <= sc < w):
         return dist.reshape(h, w), parent.reshape(h, w)
-    # neu o xuat phat khong "free" (vi phong rong), van cho di ra
+
     s = sr * w + sc
     dist[s] = 0.0
     freef = free.ravel()
@@ -114,7 +98,7 @@ def dijkstra(free, penalty, start):
             if not freef[v]:
                 continue
             if dr and dc and not (freef[ur * w + vc] and freef[vr * w + uc]):
-                continue  # khong cat goc vat can
+                continue
             nd = d + c + pen[v]
             if nd < dist[v]:
                 dist[v] = nd
@@ -124,7 +108,6 @@ def dijkstra(free, penalty, start):
 
 
 def clusters(mask, min_size=3):
-    """Gom cac o bien lien nhau (8 huong). Tra ve danh sach mang toa do (k,2)."""
     h, w = mask.shape
     seen = np.zeros_like(mask)
     out = []
@@ -150,14 +133,13 @@ def clusters(mask, min_size=3):
 
 
 def choose_goal(dist, frontiers, res, blacklist=(), size_weight=0.4, min_goal_dist=0.35):
-    """Chon bien co diem so tot nhat: duong di ngan, bien lon (nhieu thong tin). Tra ve (row, col, score) hoac None."""
     best = None
     for cells in frontiers:
         d = dist[cells[:, 0], cells[:, 1]]
         ok = np.isfinite(d)
         if not ok.any():
             continue
-        # o gan nhat trong cum (theo duong di)
+
         i = int(np.argmin(np.where(ok, d, np.inf)))
         r, c = int(cells[i, 0]), int(cells[i, 1])
         dm = float(d[i]) * res
@@ -172,7 +154,6 @@ def choose_goal(dist, frontiers, res, blacklist=(), size_weight=0.4, min_goal_di
 
 
 def extract_path(parent, goal, w):
-    """Chuoi o (row, col) tu xuat phat den goal."""
     path = []
     u = goal[0] * w + goal[1]
     guard = 0
@@ -185,7 +166,6 @@ def extract_path(parent, goal, w):
 
 
 def smooth(path_xy, step=0.15):
-    """Lay lai diem doc duong di moi `step` met (de pure pursuit muot)."""
     if len(path_xy) < 2:
         return list(path_xy)
     out = [path_xy[0]]
@@ -201,11 +181,10 @@ def smooth(path_xy, step=0.15):
 
 
 def pure_pursuit(path_xy, pose, lookahead=0.5, vmax=0.3, wmax=1.0):
-    """Lenh (v, w) bam duong di. pose = (x, y, yaw). Tra ve (v, w, con_lai) voi con_lai = khoang cach toi cuoi duong."""
     x, y, yaw = pose
     if not path_xy:
         return 0.0, 0.0, 0.0
-    # diem gan nhat roi tien len den diem cach lookahead
+
     dmin, imin = 1e9, 0
     for i, (px, py) in enumerate(path_xy):
         d = math.hypot(px - x, py - y)
@@ -220,8 +199,8 @@ def pure_pursuit(path_xy, pose, lookahead=0.5, vmax=0.3, wmax=1.0):
     err = math.atan2(tgt[1] - y, tgt[0] - x) - yaw
     err = math.atan2(math.sin(err), math.cos(err))
     if abs(err) > math.radians(55):
-        return 0.0, max(-wmax, min(wmax, 1.8 * err)), remaining       # quay tai cho truoc
+        return 0.0, max(-wmax, min(wmax, 1.8 * err)), remaining
     w = max(-wmax, min(wmax, 2.0 * err))
     v = vmax * max(0.25, 1.0 - abs(err) / math.radians(55))
-    v = min(v, max(0.08, remaining))                                     # giam toc khi toi dich
+    v = min(v, max(0.08, remaining))
     return v, w, remaining

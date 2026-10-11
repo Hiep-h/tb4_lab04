@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Cai world "small_house" (nha o AWS RoboMaker ban nhe) vao goi turtlebot4_ignition_bringup de dung world:=small_house.
-# Can sudo vi ghi vao /opt/ros/humble/share/... Dung: scripts/install_world.sh   (go bo: scripts/install_world.sh remove)
 set -e
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source /opt/ros/humble/setup.bash

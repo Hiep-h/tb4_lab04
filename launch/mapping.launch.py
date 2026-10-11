@@ -1,4 +1,3 @@
-"""Phan 2: SLAM Toolbox + RViz2 (chay sau khi da mo mo phong bang sim.launch.py)."""
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource

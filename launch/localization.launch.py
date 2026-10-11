@@ -1,4 +1,3 @@
-"""Phan 3: nap map da luu va chay localization (AMCL) + RViz2."""
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource

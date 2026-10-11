@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# Giam tai mo phong: ha tan so/do phan giai LiDAR va camera OAK-D cua TurtleBot 4 trong goi turtlebot4_description.
-# Mac dinh LiDAR 62 Hz x 640 tia + camera RGB-D 30 Hz => dung hinh bang phan mem cuc cham (Real Time Factor ~ 1%).
-# Sau khi chay: LiDAR 10 Hz x 360 tia, camera 2 Hz. Can sudo. Go bo: scripts/lighten_sensors.sh restore
 set -e
 source /opt/ros/humble/setup.bash
 D="$(ros2 pkg prefix turtlebot4_description)/share/turtlebot4_description/urdf/sensors"

@@ -1,8 +1,3 @@
-"""MOT LENH: robot TU KHAM PHA va ve ban do, tu luu map.yaml + map.pgm khi xong.
-
-Gazebo + SLAM Toolbox + RViz2 + node auto_explore (tim bien gan nhat, lap duong tranh vat can).
-    ros2 launch tb4_lab04 auto_mapping.launch.py world:=maze
-"""
 import os
 
 from launch import LaunchDescription
@@ -50,6 +45,6 @@ def generate_launch_description():
             'vmax': LaunchConfiguration('vmax'),
             'max_duration': LaunchConfiguration('max_duration'),
         }])])
-    # chi Gazebo dung hinh bang phan mem; cac tien trinh sau (RViz2, SLAM...) dung card do hoa binh thuong
+
     unset = UnsetEnvironmentVariable(name='LIBGL_ALWAYS_SOFTWARE')
     return LaunchDescription(args + [sim, unset, safety, mapping, explore])
